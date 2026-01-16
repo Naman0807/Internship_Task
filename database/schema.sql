@@ -48,9 +48,15 @@ CREATE INDEX idx_loans_current_status ON loans(current_status);
 CREATE INDEX idx_loan_history_loan_id ON loan_status_history(loan_id);
 CREATE INDEX idx_loan_history_changed_at ON loan_status_history(changed_at);
 
--- Seed Data: exactly one user and one loan
+-- Seed Data: Multiple users and loans
 INSERT INTO users (user_id_str, name)
-VALUES ('U12', 'Naman Patel');
+VALUES 
+    ('U12', 'Naman Patel'),
+    ('U23', 'Priya Sharma'),
+    ('U34', 'Rahul Kumar');
 
 INSERT INTO loans (loan_id, user_id, amount, approved_amount, current_status)
-VALUES ('LN101', 'U12', 50000.00, NULL, 'Applied');
+VALUES 
+    ('LN101', 'U12', 50000.00, NULL, 'Applied'),
+    ('LN102', 'U23', 75000.00, NULL, 'Applied'),
+    ('LN103', 'U34', 35000.00, NULL, 'Applied');

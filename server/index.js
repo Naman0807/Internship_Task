@@ -7,10 +7,12 @@ const cors = require("cors");
 const APP_NAME = "loan-automation-backend";
 const PORT = 3000;
 
-const LOAN_ID = "LN101";
 const LENDER_API_BASE_URL = "http://localhost:8000";
 const LOAN_STATUS_ENDPOINT = `${LENDER_API_BASE_URL}/api/lender/loan-status`;
 const CRON_SCHEDULE = "*/30 * * * * *";
+
+// List of all loan IDs to track
+const LOAN_IDS = ["LN101", "LN102", "LN103"];
 
 const DB_CONFIG = {
 	user: "naman",
@@ -39,42 +41,44 @@ async function testConnection() {
 
 async function syncLoanStatus() {
 	try {
-		console.log("Starting loan status sync check...");
+		console.log("Starting loan status sync check for all loans...");
 
-	const lenderResponse = await axios.get(
-			`${LOAN_STATUS_ENDPOINT}/${LOAN_ID}`
-		);
-		const apiStatus = lenderResponse.data.status;
-		const approvedAmount = lenderResponse.data.approved_amount;
+		for (const loanId of LOAN_IDS) {
+			try {
+				const lenderResponse = await axios.get(`${LOAN_STATUS_ENDPOINT}/${loanId}`);
+				const apiStatus = lenderResponse.data.status;
+				const approvedAmount = lenderResponse.data.approved_amount;
 
-		const queryResult = await pool.query(
-			"SELECT current_status FROM loans WHERE loan_id = $1",
-			[LOAN_ID]
-		);
+				const queryResult = await pool.query(
+					"SELECT current_status FROM loans WHERE loan_id = $1",
+					[loanId]
+				);
 
-		if (queryResult.rows.length === 0) {
-			console.log(`Loan ${LOAN_ID} not found in database`);
-			return;
-		}
+				if (queryResult.rows.length === 0) {
+					console.log(`Loan ${loanId} not found in database`);
+					continue;
+				}
 
-		const dbStatus = queryResult.rows[0].current_status;
+				const dbStatus = queryResult.rows[0].current_status;
 
-		if (apiStatus !== dbStatus) {
-			console.log(`Status changed! Updating from ${dbStatus} to ${apiStatus}`);
+				if (apiStatus !== dbStatus) {
+					console.log(`Status changed for ${loanId}! Updating from ${dbStatus} to ${apiStatus}`);
 
-			await pool.query(
-				"UPDATE loans SET current_status = $1, approved_amount = $2, updated_at = CURRENT_TIMESTAMP WHERE loan_id = $3",
-				[apiStatus, approvedAmount, LOAN_ID]
-			);
+					await pool.query(
+						"UPDATE loans SET current_status = $1, approved_amount = $2, updated_at = CURRENT_TIMESTAMP WHERE loan_id = $3",
+						[apiStatus, approvedAmount, loanId]
+					);
 
-			await pool.query(
-				"INSERT INTO loan_status_history (loan_id, old_status, new_status, changed_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)",
-				[LOAN_ID, dbStatus, apiStatus]
-			);
+					await pool.query(
+						"INSERT INTO loan_status_history (loan_id, old_status, new_status, changed_at) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)",
+						[loanId, dbStatus, apiStatus]
+					);
 
-			console.log(`Updated status from ${dbStatus} to ${apiStatus}, approved_amount: ${approvedAmount}`);
-		} else {
-			console.log("No change detected");
+					console.log(`Updated ${loanId} status from ${dbStatus} to ${apiStatus}, approved_amount: ${approvedAmount}`);
+				}
+			} catch (loanError) {
+				console.error(`Error syncing loan ${loanId}:`, loanError.message);
+			}
 		}
 	} catch (error) {
 		console.error("Error during loan status sync:", error.message);
@@ -87,14 +91,36 @@ async function syncLoanStatus() {
 cron.schedule(CRON_SCHEDULE, syncLoanStatus);
 console.log("Loan status sync job scheduled");
 
+// Get all loans/users for main dashboard
 app.get("/api/loans", async (req, res) => {
+	try {
+		const loansQuery = await pool.query(
+			`SELECT l.*, u.name AS user_name
+             FROM loans l
+             JOIN users u ON l.user_id = u.user_id_str
+             ORDER BY l.loan_id`
+		);
+
+		res.json({
+			loans: loansQuery.rows,
+		});
+	} catch (error) {
+		console.error("Error fetching all loans:", error.message);
+		res.status(500).json({ error: "Internal server error" });
+	}
+});
+
+// Get specific loan details with history
+app.get("/api/loans/:loanId", async (req, res) => {
+	const { loanId } = req.params;
+	
 	try {
 		const loanQuery = await pool.query(
 			`SELECT l.*, u.name AS user_name
              FROM loans l
              JOIN users u ON l.user_id = u.user_id_str
              WHERE l.loan_id = $1`,
-			[LOAN_ID]
+			[loanId]
 		);
 
 		if (loanQuery.rows.length === 0) {
@@ -106,7 +132,7 @@ app.get("/api/loans", async (req, res) => {
              FROM loan_status_history
              WHERE loan_id = $1
              ORDER BY changed_at DESC`,
-			[LOAN_ID]
+			[loanId]
 		);
 
 		res.json({

@@ -18,22 +18,45 @@ app.add_middleware(
 )
 
 LOAN_STATUSES = ["Applied", "Approved", "Disbursed", "Rejected"]
-current_status_index = 0
+# Track status index for each loan separately
+loan_status_cycles = {
+    "LN101": 0,
+    "LN102": 1,  # Start at different positions for variety
+    "LN103": 2
+}
+
+# Map loan IDs to user IDs
+loan_user_mapping = {
+    "LN101": "U12",
+    "LN102": "U23", 
+    "LN103": "U34"
+}
 
 @app.get("/api/lender/loan-status/{loan_id}")
 async def get_loan_status(loan_id: str):
-    global current_status_index
+    # Initialize loan status cycle if not exists
+    if loan_id not in loan_status_cycles:
+        loan_status_cycles[loan_id] = 0
     
-    status = LOAN_STATUSES[current_status_index]
+    # Get current status for this specific loan
+    current_index = loan_status_cycles[loan_id]
+    status = LOAN_STATUSES[current_index]
     
-    current_status_index = (current_status_index + 1) % len(LOAN_STATUSES)
+    # Move to next status for next call
+    loan_status_cycles[loan_id] = (current_index + 1) % len(LOAN_STATUSES)
 
-
-    approved_amount = random.randint(10000, 45000) if status == "Approved" else None
+    # Generate approved amount based on loan amount if approved
+    if status == "Approved":
+        loan_amounts = {"LN101": 50000, "LN102": 75000, "LN103": 35000}
+        max_approved = loan_amounts.get(loan_id, 50000) - 5000  # Ensure less than loan amount
+        min_approved = 10000
+        approved_amount = random.randint(min_approved, max_approved)
+    else:
+        approved_amount = None
 
     return {
         "loan_id": loan_id,
-        "user_id": "U12",
+        "user_id": loan_user_mapping.get(loan_id, "U12"),
         "status": status,
         "approved_amount": approved_amount,
         "updated_at": datetime.now().isoformat()
