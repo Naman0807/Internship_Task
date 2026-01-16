@@ -66,6 +66,7 @@ The backend polls the mock lender API every 30 seconds and updates the database.
 Open another terminal:
 
 ```bash
+cd client
 npm install
 npm run dev
 ```
@@ -107,6 +108,13 @@ The dashboard refreshes every 5 seconds and is available at `http://localhost:51
 
 ```
 .
+├── client/
+│   ├── app.jsx                 # React main component
+│   ├── App.css                 # Styles
+│   ├── main.jsx                # React entry point
+│   ├── index.html              # HTML template
+│   ├── package.json            # Frontend dependencies
+│   └── vite.config.js          # Vite configuration
 ├── database/
 │   └── schema.sql              # Database schema and seed data
 ├── mock_lender/
@@ -115,12 +123,6 @@ The dashboard refreshes every 5 seconds and is available at `http://localhost:51
 ├── server/
 │   ├── index.js                # Node.js backend entry point
 │   └── package.json            # Backend dependencies
-├── App.jsx                      # React main component
-├── app.css                      # Styles
-├── main.jsx                     # React entry point
-├── index.html                   # HTML template
-├── package.json                 # Frontend dependencies
-├── vite.config.js              # Vite configuration
 ├── .gitignore                  # Git ignore rules
 └── README.md                   # This file
 ```
@@ -154,6 +156,7 @@ The frontend dashboard will reflect any updates within 5 seconds.
 **Frontend:**
 
 ```bash
+cd client
 npm run dev      # Start development server
 npm run build    # Build for production
 npm run preview  # Preview production build
