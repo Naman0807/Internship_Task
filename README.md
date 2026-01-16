@@ -126,7 +126,6 @@ The dashboard refreshes every 5 seconds and is available at `http://localhost:51
 ## 📁 Project Structure
 
 ```
-.
 ├── client/
 │   ├── app.jsx                 # React router setup
 │   ├── Dashboard.jsx           # Main multi-user dashboard
@@ -136,16 +135,20 @@ The dashboard refreshes every 5 seconds and is available at `http://localhost:51
 │   ├── index.html              # HTML template
 │   ├── package.json            # Frontend dependencies
 │   └── vite.config.js          # Vite configuration
+|
 ├── database/
-│   ├── schema.sql              # Database schema with 3 users/loans
-│   └── migration_add_approved_amount.sql # Migration script
+│   ├── schema.sql              # Database schema
+|
 ├── mock_lender/
 │   ├── main.py                 # FastAPI mock lender service
 │   └── requirements.txt         # Python dependencies
+|
 ├── server/
-│   ├── index.js                # Node.js backend with multi-loan sync
+│   ├── index.js                # Node.js backend
 │   └── package.json            # Backend dependencies
+|
 ├── .gitignore                  # Git ignore rules
+|
 └── README.md                   # This file
 ```
 
