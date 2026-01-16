@@ -83,9 +83,9 @@ The dashboard refreshes every 5 seconds and is available at `http://localhost:51
 
 | User ID | Name          | Loan ID | Loan Amount |
 |---------|---------------|---------|-------------|
-| U12     | Naman Patel   | LN101   | $50,000     |
-| U23     | Priya Sharma  | LN102   | $75,000     |
-| U34     | Rahul Kumar   | LN103   | $35,000     |
+| U12     | Naman Patel   | LN101   | ₹50,000     |
+| U23     | Priya Sharma  | LN102   | ₹75,000     |
+| U34     | Rahul Kumar   | LN103   | ₹35,000     |
 
 ## 🌐 Access Points
 
@@ -180,9 +180,9 @@ Each loan follows this status progression independently:
 ### Approved Amount Logic
 When status changes to **Approved**, a random approved amount is generated that's less than the original loan amount:
 
-- **LN101** ($50,000): $10,000 - $45,000 approved
-- **LN102** ($75,000): $10,000 - $70,000 approved  
-- **LN103** ($35,000): $10,000 - $30,000 approved
+- **LN101** (₹50,000): ₹10,000 - ₹45,000 approved
+- **LN102** (₹75,000): ₹10,000 - ₹70,000 approved  
+- **LN103** (₹35,000): ₹10,000 - ₹30,000 approved
 
 Each loan starts at different positions in the cycle for dashboard variety.
 

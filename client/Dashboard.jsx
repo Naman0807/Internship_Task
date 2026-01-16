@@ -108,7 +108,7 @@ function Dashboard() {
 								<div className="flex justify-between items-center">
 									<span className="text-sm text-gray-500">Loan Amount:</span>
 									<span className="font-semibold">
-										${Number(loan.amount).toLocaleString()}
+										₹{Number(loan.amount).toLocaleString("en-IN")}
 									</span>
 								</div>
 
@@ -116,7 +116,7 @@ function Dashboard() {
 									<span className="text-sm text-gray-500">Approved Amount:</span>
 									<span className="font-semibold">
 										{loan.approved_amount
-											? `$${Number(loan.approved_amount).toLocaleString()}`
+											? `₹${Number(loan.approved_amount).toLocaleString("en-IN")}`
 											: 'N/A'}
 									</span>
 								</div>

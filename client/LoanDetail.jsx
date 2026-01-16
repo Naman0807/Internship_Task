@@ -141,7 +141,7 @@ function LoanDetail() {
 						<div className="bg-gray-50 p-4 rounded">
 							<p className="text-sm text-gray-600">Amount</p>
 							<p className="text-lg font-semibold">
-								${Number(loanData.loan.amount).toLocaleString()}
+								₹{Number(loanData.loan.amount).toLocaleString("en-IN")}
 							</p>
 						</div>
 
@@ -149,7 +149,7 @@ function LoanDetail() {
 							<p className="text-sm text-gray-600">Approved Amount</p>
 							<p className="text-lg font-semibold">
 								{loanData.loan.approved_amount
-									? `$${Number(loanData.loan.approved_amount).toLocaleString()}`
+									? `₹${Number(loanData.loan.approved_amount).toLocaleString("en-IN")}`
 									: 'N/A'
 								}
 							</p>
