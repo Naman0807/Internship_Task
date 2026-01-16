@@ -91,14 +91,14 @@ The dashboard refreshes every 5 seconds and is available at `http://localhost:51
                          ▼
 ┌─────────────────────────────────────────────────────────┐
 │              Node.js Backend (3000)                     │
-│   Polls lender API, updates database every 30 secs    │
+│   Polls lender API, updates database every 30 secs      │
 └────────────────────┬────────────────────────────────────┘
                      │
         ┌────────────┴─────────────┐
         │                          │
         ▼                          ▼
 ┌───────────────────┐    ┌──────────────────┐
-│  PostgreSQL (5433)│    │ Mock Lender (8000)│
+│  PostgreSQL (5433)│    │Mock Lender (8000)│
 │    Database       │    │  FastAPI Service │
 └───────────────────┘    └──────────────────┘
 ```
