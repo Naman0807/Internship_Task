@@ -110,7 +110,7 @@ function App() {
 						Loan Details
 					</h2>
 
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
 						<div className="bg-gray-50 p-4 rounded">
 							<p className="text-sm text-gray-600">Loan ID</p>
 							<p className="text-lg font-semibold">{loanData.loan.loan_id}</p>
@@ -125,6 +125,16 @@ function App() {
 							<p className="text-sm text-gray-600">Amount</p>
 							<p className="text-lg font-semibold">
 								${Number(loanData.loan.amount).toLocaleString()}
+							</p>
+						</div>
+
+						<div className="bg-gray-50 p-4 rounded">
+							<p className="text-sm text-gray-600">Approved Amount</p>
+							<p className="text-lg font-semibold">
+								{loanData.loan.approved_amount 
+									? `$${Number(loanData.loan.approved_amount).toLocaleString()}`
+									: 'N/A'
+								}
 							</p>
 						</div>
 

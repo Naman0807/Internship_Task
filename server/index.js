@@ -41,10 +41,11 @@ async function syncLoanStatus() {
 	try {
 		console.log("Starting loan status sync check...");
 
-		const lenderResponse = await axios.get(
+	const lenderResponse = await axios.get(
 			`${LOAN_STATUS_ENDPOINT}/${LOAN_ID}`
 		);
 		const apiStatus = lenderResponse.data.status;
+		const approvedAmount = lenderResponse.data.approved_amount;
 
 		const queryResult = await pool.query(
 			"SELECT current_status FROM loans WHERE loan_id = $1",
@@ -62,8 +63,8 @@ async function syncLoanStatus() {
 			console.log(`Status changed! Updating from ${dbStatus} to ${apiStatus}`);
 
 			await pool.query(
-				"UPDATE loans SET current_status = $1, updated_at = CURRENT_TIMESTAMP WHERE loan_id = $2",
-				[apiStatus, LOAN_ID]
+				"UPDATE loans SET current_status = $1, approved_amount = $2, updated_at = CURRENT_TIMESTAMP WHERE loan_id = $3",
+				[apiStatus, approvedAmount, LOAN_ID]
 			);
 
 			await pool.query(
@@ -71,7 +72,7 @@ async function syncLoanStatus() {
 				[LOAN_ID, dbStatus, apiStatus]
 			);
 
-			console.log(`Updated status from ${dbStatus} to ${apiStatus}`);
+			console.log(`Updated status from ${dbStatus} to ${apiStatus}, approved_amount: ${approvedAmount}`);
 		} else {
 			console.log("No change detected");
 		}

@@ -2,7 +2,7 @@
 -- PostgreSQL Database: loan_db on localhost:5433
 -- User: naman
 
--- Drop existing tables if they exist (for clean setup)
+-- Drop existing tables if they exist (clean setup)
 DROP TABLE IF EXISTS loan_status_history CASCADE;
 DROP TABLE IF EXISTS loans CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
@@ -15,14 +15,18 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create loans table
+-- Create loans table (approved_amount included in base schema)
 CREATE TABLE loans (
     loan_id VARCHAR(50) PRIMARY KEY,
     user_id VARCHAR(50) NOT NULL,
     amount DECIMAL(12, 2) NOT NULL,
+    approved_amount DECIMAL(12, 2),
     current_status VARCHAR(50) NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id_str) ON DELETE CASCADE
+    CONSTRAINT fk_loans_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(user_id_str)
+        ON DELETE CASCADE
 );
 
 -- Create loan_status_history table for audit trail
@@ -32,17 +36,21 @@ CREATE TABLE loan_status_history (
     old_status VARCHAR(50) NOT NULL,
     new_status VARCHAR(50) NOT NULL,
     changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (loan_id) REFERENCES loans(loan_id) ON DELETE CASCADE
+    CONSTRAINT fk_history_loan
+        FOREIGN KEY (loan_id)
+        REFERENCES loans(loan_id)
+        ON DELETE CASCADE
 );
 
--- Create indexes for better performance
+-- Indexes for performance optimization
 CREATE INDEX idx_loans_user_id ON loans(user_id);
 CREATE INDEX idx_loans_current_status ON loans(current_status);
 CREATE INDEX idx_loan_history_loan_id ON loan_status_history(loan_id);
 CREATE INDEX idx_loan_history_changed_at ON loan_status_history(changed_at);
 
--- Seed Data: Insert exactly one user and one loan as specified
-INSERT INTO users (user_id_str, name) VALUES ('U12', 'Naman Patel');
+-- Seed Data: exactly one user and one loan
+INSERT INTO users (user_id_str, name)
+VALUES ('U12', 'Naman Patel');
 
-INSERT INTO loans (loan_id, user_id, amount, current_status) VALUES 
-('LN101', 'U12', 50000.00, 'Applied');
+INSERT INTO loans (loan_id, user_id, amount, approved_amount, current_status)
+VALUES ('LN101', 'U12', 50000.00, NULL, 'Applied');

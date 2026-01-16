@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import random
 from datetime import datetime
 import uvicorn
+import random
 
 app = FastAPI(
     title="Mock Lender Service",
@@ -18,14 +18,24 @@ app.add_middleware(
 )
 
 LOAN_STATUSES = ["Applied", "Approved", "Disbursed", "Rejected"]
+current_status_index = 0
 
 @app.get("/api/lender/loan-status/{loan_id}")
 async def get_loan_status(loan_id: str):
-    status = random.choice(LOAN_STATUSES)
+    global current_status_index
+    
+    status = LOAN_STATUSES[current_status_index]
+    
+    current_status_index = (current_status_index + 1) % len(LOAN_STATUSES)
+
+
+    approved_amount = random.randint(10000, 45000) if status == "Approved" else None
 
     return {
         "loan_id": loan_id,
+        "user_id": "U12",
         "status": status,
+        "approved_amount": approved_amount,
         "updated_at": datetime.now().isoformat()
     }
 
