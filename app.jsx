@@ -54,9 +54,7 @@ function App() {
 		if (selectedFilter === "all") return loanData.history;
 
 		return loanData.history.filter(
-			(entry) =>
-				entry.old_status === selectedFilter ||
-				entry.new_status === selectedFilter
+			(entry) => entry.new_status === selectedFilter
 		);
 	};
 
