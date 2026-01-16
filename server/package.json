@@ -1,0 +1,32 @@
+{
+  "name": "loan-automation-backend",
+  "version": "1.0.0",
+  "description": "Main backend service for Real-Time Loan Status Automation System",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [
+    "loan",
+    "automation",
+    "real-time",
+    "status",
+    "tracking"
+  ],
+  "author": "Naman Patel",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
+    "axios": "^1.6.0",
+    "node-cron": "^3.0.3",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
