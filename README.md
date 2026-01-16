@@ -1,128 +1,195 @@
-# Real-Time Loan Status Automation System - Startup Guide
+# Real-Time Loan Status Automation System
 
-## 📋 Prerequisites
+> A full-stack application for automating and tracking loan status updates in real-time.
 
-Before starting, ensure you have:
-- **Node.js** (v16+) installed
-- **npm** installed 
-- **Python** (v3.8+) installed
-- **PostgreSQL** installed and running on port 5433
+## 📋 Overview
 
-## 🗄️ Step 1: Setup Database
+This system provides end-to-end loan status management with real-time updates. It consists of:
 
-1. Connect to PostgreSQL:
-   ```bash
-   psql -h localhost -p 5433 -U naman
-   ```
+- **Frontend**: React + Vite dashboard for visualization
+- **Backend**: Node.js/Express API for processing and data management
+- **Mock Lender**: Python service simulating lender API responses
+- **Database**: PostgreSQL for persistent storage
 
-2. Create database:
-   ```sql
-   CREATE DATABASE loan_db;
-   \c loan_db;
-   ```
+## 🔧 Prerequisites
 
-3. Run the schema:
-   ```bash
-   psql -h localhost -p 5433 -U naman -d loan_db -f database/schema.sql
-   ```
+Ensure the following software is installed:
 
-## 🐍 Step 2: Start Mock Lender Service (Port 8000)
+- **Node.js** v16+ ([download](https://nodejs.org))
+- **npm** (comes with Node.js)
+- **Python** v3.8+ ([download](https://www.python.org))
+- **PostgreSQL** v12+ running on port 5433
 
-1. Navigate to mock lender directory:
-   ```bash
-   cd mock_lender
-   ```
+## 🚀 Quick Start
 
-2. Install Python dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 1️⃣ Database Setup
 
-3. Start the service:
-   ```bash
-   python main.py
-   ```
+```bash
+# Connect to PostgreSQL
+psql -h localhost -p 5433 -U naman
 
-## 🟢 Step 3: Start Main Backend (Port 3000)
+# Create the application database
+CREATE DATABASE loan_db;
+\c loan_db;
 
-1. Open a new terminal, navigate to server directory:
-   ```bash
-   cd server
-   ```
+# Exit psql
+\q
 
-2. Install Node.js dependencies:
-   ```bash
-   npm install
-   ```
+# Execute the schema script
+psql -h localhost -p 5433 -U naman -d loan_db -f database/schema.sql
+```
 
-3. Start the backend service:
-   ```bash
-   npm start
-   ```
+### 2️⃣ Mock Lender Service (Port 8000)
 
-## 🎨 Step 4: Start Frontend (Port 5173)
+```bash
+cd mock_lender
+pip install -r requirements.txt
+python main.py
+```
 
-1. Open another terminal, navigate to project root:
-   ```bash
-   cd ..  # Back to project root
-   ```
+The service simulates lender API responses and runs on `http://localhost:8000`.
 
-2. Install frontend dependencies:
-   ```bash
-   npm install
-   ```
+### 3️⃣ Backend API (Port 3000)
 
-3. Start the frontend development server:
-   ```bash
-   npm run dev
-   ```
+Open a new terminal:
 
-## 🚀 Step 5: Access the Dashboard
+```bash
+cd server
+npm install
+npm start
+```
 
-Open your browser and go to: **http://localhost:5173**
+The backend polls the mock lender API every 30 seconds and updates the database.
 
-## ✅ Verification
+### 4️⃣ Frontend Dashboard (Port 5173)
 
-To verify all services are running:
+Open another terminal:
 
-- **Mock Lender API**: http://localhost:8000/api/lender/loan-status/LN101
-- **Backend API**: http://localhost:3000/api/loans  
-- **Frontend Dashboard**: http://localhost:5173
+```bash
+npm install
+npm run dev
+```
 
-## 🔄 How It Works
+The dashboard refreshes every 5 seconds and is available at `http://localhost:5173`.
 
-1. **Mock Lender** (Port 8000): Returns random loan statuses
-2. **Backend** (Port 3000): Polls every 30 seconds, detects changes, updates database
-3. **Frontend** (Port 5173): Auto-refreshes every 5 seconds to display latest data
+## 🌐 Access Points
 
-## 📊 Test the System
+| Service            | URL                                                  |
+| ------------------ | ---------------------------------------------------- |
+| Frontend Dashboard | `http://localhost:5173`                              |
+| Backend API        | `http://localhost:3000/api/loans`                    |
+| Mock Lender API    | `http://localhost:8000/api/lender/loan-status/LN101` |
 
-Watch the console logs in the backend terminal. Every 30 seconds you'll see:
-- "No change" (if status same) or 
-- "Updated status from X to Y" (when random change occurs)
+## 📊 System Architecture
 
-The frontend dashboard will automatically update within 5 seconds to reflect any changes.
-
-## 🛠️ Troubleshooting
-
-- **Database connection**: Ensure PostgreSQL is running on port 5433
-- **Port conflicts**: Make sure ports 8000, 3000, and 5173 are available
-- **Dependencies**: Run `npm install` and `pip install` if you get import errors
+```
+┌─────────────────────────────────────────────────────────┐
+│                  React Frontend (5173)                  │
+│         Displays loan status dashboard                  │
+└────────────────────────┬────────────────────────────────┘
+                         │ HTTP Requests
+                         ▼
+┌─────────────────────────────────────────────────────────┐
+│              Node.js Backend (3000)                     │
+│   Polls lender API, updates database every 30 secs    │
+└────────────────────┬────────────────────────────────────┘
+                     │
+        ┌────────────┴─────────────┐
+        │                          │
+        ▼                          ▼
+┌───────────────────┐    ┌──────────────────┐
+│  PostgreSQL (5433)│    │ Mock Lender (8000)│
+│    Database       │    │  FastAPI Service │
+└───────────────────┘    └──────────────────┘
+```
 
 ## 📁 Project Structure
 
 ```
+.
 ├── database/
 │   └── schema.sql              # Database schema and seed data
 ├── mock_lender/
-│   ├── main.py                # FastAPI mock lender service
-│   └── requirements.txt       # Python dependencies
+│   ├── main.py                 # FastAPI mock lender service
+│   └── requirements.txt         # Python dependencies
 ├── server/
-│   ├── index.js               # Node.js backend service
-│   └── package.json           # Node.js dependencies
-├── App.jsx                    # React frontend component
-├── index.html                 # HTML with Tailwind CDN
-├── main.jsx                   # React entry point
-├── package.json               # Frontend dependencies
-└── vite.config.js            # Vite configuration
+│   ├── index.js                # Node.js backend entry point
+│   └── package.json            # Backend dependencies
+├── App.jsx                      # React main component
+├── app.css                      # Styles
+├── main.jsx                     # React entry point
+├── index.html                   # HTML template
+├── package.json                 # Frontend dependencies
+├── vite.config.js              # Vite configuration
+├── .gitignore                  # Git ignore rules
+└── README.md                   # This file
 ```
+
+## 🔄 System Workflow
+
+1. **Mock Lender Service** → Returns randomized loan status responses
+2. **Backend Service** → Polls the lender API every 30 seconds, detects changes, and updates the database
+3. **Frontend Application** → Refreshes every 5 seconds and displays the latest loan status data
+
+## 📝 Monitoring
+
+Check the backend terminal for updates every 30 seconds:
+
+- `"No change"` - Loan status remains the same
+- `"Updated status from <OLD> to <NEW>"` - Status has changed
+
+The frontend dashboard will reflect any updates within 5 seconds.
+
+## ⚠️ Troubleshooting
+
+| Issue                      | Solution                                                                   |
+| -------------------------- | -------------------------------------------------------------------------- |
+| Database connection errors | Ensure PostgreSQL is running on port 5433                                  |
+| Port conflicts             | Check that ports 8000, 3000, and 5173 are available                        |
+| Module not found errors    | Run `npm install` (frontend) or `pip install -r requirements.txt` (Python) |
+| No data displaying         | Verify all three services are running                                      |
+
+## 📦 Available Scripts
+
+**Frontend:**
+
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run preview  # Preview production build
+```
+
+**Backend:**
+
+```bash
+npm start        # Start the server
+npm run dev      # Start with nodemon (auto-reload)
+```
+
+**Mock Lender:**
+
+```bash
+python main.py   # Run the mock lender service
+```
+
+## 🔐 Environment Variables
+
+Create a `.env` file in the project root if needed:
+
+```
+DATABASE_URL=postgresql://user:password@localhost:5433/loan_db
+LENDER_API_URL=http://localhost:8000
+POLLING_INTERVAL=30000
+```
+
+## 📄 License
+
+MIT
+
+## 👤 Author
+
+Naman Patel
+
+---
+
+**Last Updated:** January 16, 2026
