@@ -188,7 +188,7 @@ MIT
 
 ## 👤 Author
 
-Naman Patel
+Naman Parmar
 
 ---
 
